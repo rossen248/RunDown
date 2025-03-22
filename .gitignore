@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.swp
+*.egg-info/
+.pytest_cache/
+.venv/
+
+# Environment
+.env
+
+# Output
+output/
+
+# IDE
+.vscode/
+.idea/
