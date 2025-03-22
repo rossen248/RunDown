@@ -1,0 +1,14 @@
+# pyproject.toml (preferred)
+[project]
+name = "RunDown"
+version = "0.1.0"
+dependencies = [
+    "stravalib",
+    "python-dotenv",
+    "pillow",
+    "python-dateutil"
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
