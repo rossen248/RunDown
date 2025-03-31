@@ -39,16 +39,35 @@ class StravaStatsImage:
 
     def _load_fonts(self):
         """Load fonts with fallbacks if needed."""
+        import os
+
+        # Get the absolute path to the project root (2 levels up from generate_image.py)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.abspath(os.path.join(current_dir, "../.."))
+
+        # Define font paths relative to project root
+        font_paths = {
+            "title": os.path.join(project_root, "assets/fonts/Poppins/Poppins-Bold.ttf"),
+            "header": os.path.join(project_root, "assets/fonts/Poppins/Poppins-SemiBold.ttf"),
+            "text": os.path.join(project_root, "assets/fonts/Poppins/Poppins-Medium.ttf"),
+            "value": os.path.join(project_root, "assets/fonts/Poppins/Poppins-Bold.ttf"),
+            "label": os.path.join(project_root, "assets/fonts/Poppins/Poppins-Regular.ttf")
+        }
+
         try:
             return {
-                "title": ImageFont.truetype("Poppins-Bold.ttf", 105),
-                "header": ImageFont.truetype("Poppins-SemiBold.ttf", 60),
-                "text": ImageFont.truetype("Poppins-Medium.ttf", 34),
-                "value": ImageFont.truetype("Poppins-Bold.ttf", 50),
-                "label": ImageFont.truetype("Poppins-Regular.ttf", 28)
+                name: ImageFont.truetype(path, size)
+                for name, (path, size) in {
+                    "title": (font_paths["title"], 105),
+                    "header": (font_paths["header"], 65),
+                    "text": (font_paths["text"], 34),
+                    "value": (font_paths["value"], 50),
+                    "label": (font_paths["label"], 28)
+                }.items()
             }
-        except IOError:
-            print("Warning: Default fonts used as Poppins fonts were not found.")
+        except IOError as e:
+            print(f"Warning: Font loading error: {e}")
+            print("Using default fonts as fallback.")
             default = ImageFont.load_default()
             return {
                 "title": default,
@@ -129,7 +148,7 @@ class StravaStatsImage:
 
         # Card title
         card_title_y = current_y + card_padding
-        card_content_y = card_title_y + 90
+        card_content_y = card_title_y + 110
         self.draw.text(
             (margin + card_padding, card_title_y),
             title,
@@ -150,27 +169,31 @@ class StravaStatsImage:
         grid_width = (card_width - (2 * card_padding)) // 2
         grid_height = 150  # Approximate height for each grid item
 
-        # Total runs - top left
+        # Total runs - bottom right
         self.draw_stat(
-            margin + card_padding, content_y,
+            # margin + card_padding, content_y,
+            margin + card_padding + grid_width, content_y + grid_height - 20,
             str(summary.get('total_runs', 0)), "RUNS"
         )
 
-        # Total distance - top right
+        # Total distance - top left
         self.draw_stat(
-            margin + card_padding + grid_width, content_y,
+            # margin + card_padding + grid_width, content_y,
+            margin + card_padding, content_y,
             f"{summary.get('total_distance_km', 0):.1f}", "KM"
         )
 
-        # Duration - bottom left
+        # Duration - top right
         self.draw_stat(
-            margin + card_padding, content_y + grid_height - 20,
+            # margin + card_padding, content_y + grid_height - 20,
+            margin + card_padding + grid_width, content_y,
             summary.get('total_duration', '0:00'), "TOTAL TIME"
         )
 
-        # Average pace - bottom right
+        # Average pace - bottom left
         self.draw_stat(
-            margin + card_padding + grid_width, content_y + grid_height - 20,
+            # margin + card_padding + grid_width, content_y + grid_height - 20,
+            margin + card_padding, content_y + grid_height - 20,
             summary.get('average_pace', '0:00'), "AVG PACE"
         )
 
@@ -185,27 +208,30 @@ class StravaStatsImage:
             )
             return
 
-        # Grid dimensions for layout
+        # Grid dimensions
         grid_width = (card_width - (2 * card_padding)) // 2
+        grid_height = 150  # Match the same grid height as summary card
 
-        # Distance
+        # Distance - top left
         self.draw_stat(
             margin + card_padding, content_y,
-            f"{run_data.get('distance_km', 0):.1f}", "KM"
+            f"{run_data.distance_km:.1f}", "KM"
         )
 
-        # Duration
+        # Duration - top right
         self.draw_stat(
             margin + card_padding + grid_width, content_y,
-            run_data.get('duration_str', '0:00'), "TIME"
+            run_data.duration_str, "TIME"
         )
 
-        # Pace - centered underneath
-        pace_y = content_y + 90
+        # Pace - bottom left (to match summary card grid layout)
         self.draw_stat(
-            margin + card_padding, pace_y,
-            run_data.get('pace_str', '0:00'), "MIN/KM", center=True
+            margin + card_padding, content_y + grid_height - 20,
+            run_data.pace_str, "PACE"
         )
+
+        # Empty bottom right (or could add another stat here)
+        # Leaving it empty to match the summary card's 2x2 grid layout
 
     def _draw_watermark(self):
         """Draw the watermark at the bottom of the image."""
@@ -229,12 +255,13 @@ class StravaStatsImage:
         # Draw header section
         current_y = self._draw_header(current_y)
 
-        # Draw summary card
+        # Draw fastest run card
+        fastest_run = self.data.get("fastest_run")
         current_y = self._draw_card(
-            "SUMMARY",
-            self._draw_summary_card,
+            "FASTEST RUN",
+            lambda m, p, w, y: self._draw_run_card(fastest_run, m, p, w, y),
             current_y,
-            450  # Fixed height for summary card
+            450  # Same height as summary card
         )
 
         # Draw longest run card
@@ -243,16 +270,15 @@ class StravaStatsImage:
             "LONGEST RUN",
             lambda m, p, w, y: self._draw_run_card(longest_run, m, p, w, y),
             current_y,
-            450  # Fixed height for run cards
+            450  # Same height as summary card
         )
 
-        # Draw fastest run card
-        fastest_run = self.data.get("fastest_run")
+        # Draw summary card
         current_y = self._draw_card(
-            "FASTEST RUN",
-            lambda m, p, w, y: self._draw_run_card(fastest_run, m, p, w, y),
+            "SUMMARY",
+            self._draw_summary_card,
             current_y,
-            450  # Fixed height for run cards
+            450  # Fixed height for summary card
         )
 
         # Add watermark
