@@ -1,135 +1,155 @@
-# Strava Weekly Running Summary 🏃♂️📊
+# RunDown - Weekly Strava Running Stats Generator
 
-A Python automation tool that generates Instagram-ready weekly running summaries using your Strava data.
+![RunDown Logo](assets/logo.png)
 
-![Sample Summary Image](output/images/sample_summary.png) *Example output*
+RunDown is a Python application that generates beautiful weekly summary images of your Strava running activities. Track
+your progress, share your achievements, and visualize your running data with eye-catching graphics.
 
 ## Features
 
-- 📅 **Automatic Weekly Reports** - Runs every Sunday to compile your week's running stats
-- 📸 **Instagram-Ready Images** - Generates styled images with key metrics
-- 🔒 **Secure Authentication** - OAuth2 with automatic token refresh
-- 📊 **Key Metrics** - Tracks distance, pace, elevation, and more
-- ⚙️ **Customizable Templates** - Easy to modify colors, fonts, and layout
+- Automatically fetches your running data from Strava using the official API
+- Generates stylish images with weekly running statistics
+- Shows summary stats including total distance, duration, and average pace
+- Highlights your fastest and longest runs of the week
+- OAuth authentication flow with automatic token refresh
+- Designed for automated weekly deployment via cron jobs
 
-## Requirements
+## Example Output
 
-- Python 3.9+
-- [Strava Developer Account](https://www.strava.com/settings/api)
-- Basic Linux/Unix environment (for cron scheduling)
+![Example Stats Image](assets/example.png)
 
 ## Installation
 
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/yourusername/rundown.git
+   cd rundown
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -e .
+   ```
+
+3. Create a `.env` file in the project root with your Strava API credentials:
+   ```
+   STRAVA_CLIENT_ID=your_client_id
+   STRAVA_CLIENT_SECRET=your_client_secret
+   ```
+
+## Strava API Setup
+
+1. Create a Strava API application at https://www.strava.com/settings/api
+2. Set your application's "Authorization Callback Domain" to `localhost`
+3. Note your Client ID and Client Secret for the `.env` file
+
+## Usage
+
+### One-time Run
+
+To generate stats for the previous week:
+
 ```bash
-# Clone repository
-git clone https://github.com/yourusername/strava-weekly-summary.git
-cd strava-weekly-summary
+python -m src.main
+```
 
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate
+On first run, you'll be prompted to authorize the application with your Strava account.
 
-# Install dependencies
-pip install -r requirements.txt
+### Automated Weekly Updates
+
+Set up a cron job to run weekly (e.g., every Monday morning):
+
+1. Make the deployment script executable:
+   ```bash
+   chmod +x scripts/deploy_cronjob.sh
+   ```
+
+2. Set up the cron job:
+   ```bash
+   scripts/deploy_cronjob.sh
+   ```
+
+## Project Structure
+
+```
+.
+├── assets
+│   ├── fonts
+│   │   ├── arial-font
+│   │   └── Poppins
+│   ├── logo.png
+│   └── templates
+├── config
+│   ├── font_settings.yaml
+│   └── settings.yaml
+├── output
+│   ├── images
+│   └── logs
+├── scripts
+│   ├── deploy_cronjob.sh
+│   └── setup_environment.sh
+└── src
+    ├── data_processors
+    │   ├── __init__.py
+    │   └── run_data_processor.py
+    ├── image_generator
+    │   ├── generate_image.py
+    │   └── __init__.py
+    ├── main.py
+    ├── strava_client
+    │   ├── auth.py
+    │   ├── data_fetcher.py
+    │   └── __init__.py
+    └── utils
+        ├── date_utils.py
+        ├── file_io.py
+        └── __init__.py
 ```
 
 ## Configuration
 
-1. **Strava API Setup**
-    - Create an app at [Strava API Settings](https://www.strava.com/settings/api)
-    - Get your `CLIENT_ID` and `CLIENT_SECRET`
+The application uses YAML configuration files located in the `config` directory:
 
-2. **Environment Setup**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` with your credentials:
-   ```ini
-   STRAVA_CLIENT_ID=your_id_here
-   STRAVA_CLIENT_SECRET=your_secret_here
-   ```
+- `settings.yaml` - General application settings
+- `font_settings.yaml` - Font configuration for image generation
 
-3. **Font Setup**
-    - Place your preferred fonts in `assets/fonts/`
-    - Update `config/font_settings.yaml`
+## Development
 
-## Usage
+### Prerequisites
 
-### First-Time Authentication
+- Python 3.8+
+- [tree](https://linux.die.net/man/1/tree) (for development utilities)
+- [xclip](https://github.com/astrand/xclip) (for development utilities)
+
+### Setup Development Environment
 
 ```bash
-python src/main.py
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# or
+.venv\Scripts\activate  # Windows
+
+# Install in development mode
+pip install -e .
 ```
 
-Follow the OAuth flow when prompted. This will generate tokens in your `.env` file.
+### Project Helper Scripts
 
-### Manual Run
+- `copy_project.sh` - Copies project structure and essential files to clipboard
 
-```bash
-python src/main.py
-```
+## Dependencies
 
-Output images will be saved to `output/images/`
-
-### Automated Scheduling (cron)
-
-```bash
-# Edit cron jobs
-crontab -e
-```
-
-Add this line to run every Sunday at 9 PM:
-
-```bash
-0 21 * * 0 /path/to/project/.venv/bin/python /path/to/project/src/main.py
-```
-
-## Directory Structure
-
-```
-.
-├── config/               # Configuration files
-├── src/                  # Python source code
-├── assets/               # Fonts and templates
-├── output/               # Generated images and logs
-├── scripts/              # Deployment helpers
-└── tests/                # Unit tests
-```
-
-## Customization
-
-Modify these files to change the output:
-
-- `config/settings.yaml` - Color schemes and layout
-- `src/image_generator/stats_visualizer.py` - Metrics calculation
-- `assets/templates/` - Add background images
-
-## Contributing
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- stravalib - Python client for Strava API
+- python-dotenv - Environment variable management
+- Pillow - Image processing library
+- python-dateutil - Advanced date handling
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+[MIT License](LICENSE)
 
-## Acknowledgments
+## Acknowledgements
 
-- Strava API team for maintaining their excellent service
-- `stravalib` developers for the Python client library
-- Pillow maintainers for image processing capabilities
-
-```
-
-This README includes:
-1. Clear visual hierarchy with emojis
-2. Installation and configuration instructions
-3. Usage examples for both manual and automated runs
-4. Customization guidance
-5. Contribution guidelines
-6. License information
-
-Would you like me to add any specific sections or modify existing ones?
+- [Strava API](https://developers.strava.com/) for providing access to running data
+- [Poppins Font](https://fonts.google.com/specimen/Poppins) by Indian Type Foundry
