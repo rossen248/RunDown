@@ -16,4 +16,3 @@ output/
 .vscode/
 .idea/
 /build/
-/copy_project.sh
