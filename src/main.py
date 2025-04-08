@@ -27,7 +27,7 @@ def main():
     processed_data = processor.process_runs()
 
     # Generate a filename that includes the week number
-    output_filename = f"output/images/test_stats_week_{week_number}.png"
+    output_filename = f"output/images/stats_week_{week_number}.png"
 
     # Pass the week number to the image generator
     generate_strava_stats_image(processed_data, output_filename, week_number)

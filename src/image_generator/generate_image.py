@@ -173,28 +173,28 @@ class StravaStatsImage:
         self.draw_stat(
             # margin + card_padding, content_y,
             margin + card_padding + grid_width, content_y + grid_height - 20,
-            str(summary.get('total_runs', 0)), "RUNS"
+            str(summary.get('total_runs', 0)), "Runs"
         )
 
         # Total distance - top left
         self.draw_stat(
             # margin + card_padding + grid_width, content_y,
             margin + card_padding, content_y,
-            f"{summary.get('total_distance_km', 0):.1f}", "KM"
+            summary.get('total_distance_km', 0), "Total Distance"
         )
 
         # Duration - top right
         self.draw_stat(
             # margin + card_padding, content_y + grid_height - 20,
             margin + card_padding + grid_width, content_y,
-            summary.get('total_duration', '0:00'), "TOTAL TIME"
+            summary.get('total_duration', '0:00'), "Total Time"
         )
 
         # Average pace - bottom left
         self.draw_stat(
             # margin + card_padding + grid_width, content_y + grid_height - 20,
             margin + card_padding, content_y + grid_height - 20,
-            summary.get('average_pace', '0:00'), "AVG PACE"
+            summary.get('average_pace', '0:00'), "avg Pace"
         )
 
     def _draw_run_card(self, run_data, margin, card_padding, card_width, content_y):
@@ -215,19 +215,19 @@ class StravaStatsImage:
         # Distance - top left
         self.draw_stat(
             margin + card_padding, content_y,
-            f"{run_data.distance_km:.1f}", "KM"
+            run_data.distance_km, "Distance"
         )
 
         # Duration - top right
         self.draw_stat(
             margin + card_padding + grid_width, content_y,
-            run_data.duration_str, "TIME"
+            run_data.duration_str, "Time"
         )
 
         # Pace - bottom left (to match summary card grid layout)
         self.draw_stat(
             margin + card_padding, content_y + grid_height - 20,
-            run_data.pace_str, "PACE"
+            run_data.pace_str, "Pace"
         )
 
         # Empty bottom right (or could add another stat here)
