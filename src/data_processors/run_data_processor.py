@@ -6,9 +6,9 @@ from typing import List, Dict, Optional
 class FormattedRun:
     name: str
     date: str
-    distance_km: float
+    distance_km: str  # Changed to string to include units
     duration_str: str  # Formatted as HH:MM:SS or MM:SS
-    pace_str: str  # Formatted as MM:SS
+    pace_str: str  # Formatted as MM:SS /km
     start_time: str
 
 
@@ -23,14 +23,14 @@ def _format_run(run) -> FormattedRun:
     if run.distance > 0:
         pace_seconds = run.moving_time / (run.distance / 1000)
         pace_min, pace_sec = divmod(int(pace_seconds), 60)
-        pace_str = f"{pace_min}:{pace_sec:02d}"
+        pace_str = f"{pace_min}:{pace_sec:02d} /km"  # Added /km unit
     else:
-        pace_str = "0:00"
+        pace_str = "0:00 /km"  # Added /km unit
 
     return FormattedRun(
         name=run.name,
         date=run.start_date.date().strftime("%d %b %Y"),
-        distance_km=round(run.distance / 1000, 2),
+        distance_km=f"{round(run.distance / 1000, 2)} km",  # Added km unit
         duration_str=duration_str,
         pace_str=pace_str,
         start_time=run.start_date.time().strftime("%H:%M")
@@ -63,13 +63,13 @@ class RunDataProcessor:
         if total_distance_km > 0:
             pace_seconds_per_km = total_seconds / total_distance_km
             pace_min, pace_sec = divmod(int(pace_seconds_per_km), 60)
-            avg_pace = f"{pace_min}:{pace_sec:02d}"
+            avg_pace = f"{pace_min}:{pace_sec:02d} /km"  # Added /km unit
         else:
-            avg_pace = "0:00"
+            avg_pace = "0:00 /km"  # Added /km unit
 
         return {
             "total_runs": len(self.runs),
-            "total_distance_km": round(total_distance_km, 1),
+            "total_distance_km": f"{round(total_distance_km, 1)} km",  # Added km unit
             "total_duration": duration_str,
             "average_pace": avg_pace
         }
