@@ -1,18 +1,16 @@
-# RunDown - Weekly Strava Running Stats Generator
+# RunDown - Strava Weekly Running Stats Generator
 
 ![RunDown Logo](assets/logo.png)
 
-RunDown is a Python application that generates beautiful weekly summary images of your Strava running activities. Track
-your progress, share your achievements, and visualize your running data with eye-catching graphics.
+Generate beautiful weekly summary images of your Strava running activities for any date range.
 
 ## Features
 
-- Automatically fetches your running data from Strava using the official API
+- Fetches running data from Strava using the official API
 - Generates stylish images with weekly running statistics
-- Shows summary stats including total distance, duration, and average pace
-- Highlights your fastest and longest runs of the week
-- OAuth authentication flow with automatic token refresh
-- Designed for automated weekly deployment via cron jobs
+- Flexible date selection (specific weeks, date ranges, or last week)
+- Shows total distance, duration, average pace, and highlights fastest/longest runs
+- OAuth authentication with automatic token refresh
 
 ## Example Output
 
@@ -45,86 +43,74 @@ your progress, share your achievements, and visualize your running data with eye
 
 ## Usage
 
-### One-time Run
-
-To generate stats for the previous week:
+### Basic Usage
 
 ```bash
-python -m src.main
+# Generate stats for last complete week
+python src/main.py
+
+# Generate stats for a specific week (by any date in that week)
+python src/main.py --date 2024-03-15
+
+# Generate stats for a custom date range
+python src/main.py --start 2024-03-11 --end 2024-03-17
 ```
 
-On first run, you'll be prompted to authorize the application with your Strava account.
+### Advanced Options
 
-### Automated Weekly Updates
+```bash
+# Custom output file and label
+python src/main.py --date 2024-03-15 --output my_stats.png --label "Training Week 5"
 
-Set up a cron job to run weekly (e.g., every Monday morning):
+# Use short flags
+python src/main.py -d 2024-03-15 -o my_stats.png -l "Great Week"
+```
 
-1. Make the deployment script executable:
-   ```bash
-   chmod +x scripts/deploy_cronjob.sh
-   ```
+### Command Line Options
 
-2. Set up the cron job:
-   ```bash
-   scripts/deploy_cronjob.sh
-   ```
+| Option | Description | Example |
+|--------|-------------|---------|
+| `--date`, `--week-of` | Generate stats for week containing this date | `--date 2024-03-15` |
+| `--last-week` | Generate stats for last complete week (default) | `--last-week` |
+| `--start`, `--end` | Custom date range (must use both) | `--start 2024-03-11 --end 2024-03-17` |
+| `--output`, `-o` | Output file path | `--output my_stats.png` |
+| `--label`, `-l` | Custom title for the image | `--label "Training Week 5"` |
+
+## First Run Authorization
+
+On your first run, you'll be prompted to authorize the application:
+
+1. A browser URL will be displayed
+2. Visit the URL and authorize RunDown to access your Strava data
+3. Copy the authorization code from the redirect URL
+4. Paste it into the terminal when prompted
+
+The authorization tokens are saved and will be automatically refreshed as needed.
 
 ## Project Structure
 
 ```
-.
-├── assets
-│   ├── fonts
-│   │   ├── arial-font
-│   │   └── Poppins
-│   ├── logo.png
-│   └── templates
-├── config
-│   ├── font_settings.yaml
-│   └── settings.yaml
-├── output
-│   ├── images
-│   └── logs
-├── scripts
-│   ├── deploy_cronjob.sh
-│   └── setup_environment.sh
-└── src
-    ├── data_processors
-    │   ├── __init__.py
-    │   └── run_data_processor.py
-    ├── image_generator
-    │   ├── generate_image.py
-    │   └── __init__.py
-    ├── main.py
-    ├── strava_client
-    │   ├── auth.py
-    │   ├── data_fetcher.py
-    │   └── __init__.py
-    └── utils
-        ├── date_utils.py
-        ├── file_io.py
-        └── __init__.py
+rundown/
+├── src/
+│   ├── main.py              # Main CLI application
+│   ├── strava_client/       # Strava API integration
+│   ├── data_processors/     # Run data processing
+│   ├── image_generator/     # Image generation
+│   └── utils/              # Date utilities
+├── assets/
+│   ├── fonts/              # Font files for image generation
+│   └── logo.png            # Project logo
+├── output/
+│   └── images/             # Generated images
+└── .env                    # Your API credentials (create this)
 ```
 
-## Configuration
-
-The application uses YAML configuration files located in the `config` directory:
-
-- `settings.yaml` - General application settings
-- `font_settings.yaml` - Font configuration for image generation
-
 ## Development
-
-### Prerequisites
-
-- Python 3.8+
-- [tree](https://linux.die.net/man/1/tree) (for development utilities)
-- [xclip](https://github.com/astrand/xclip) (for development utilities)
 
 ### Setup Development Environment
 
 ```bash
-# Create and activate virtual environment
+# Create virtual environment
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
 # or
@@ -134,16 +120,24 @@ source .venv/bin/activate  # Linux/Mac
 pip install -e .
 ```
 
-### Project Helper Scripts
-
-- `copy_project.sh` - Copies project structure and essential files to clipboard
-
 ## Dependencies
 
-- stravalib - Python client for Strava API
-- python-dotenv - Environment variable management
-- Pillow - Image processing library
-- python-dateutil - Advanced date handling
+- **stravalib** - Python client for Strava API
+- **python-dotenv** - Environment variable management  
+- **Pillow** - Image processing library
+- **python-dateutil** - Advanced date handling
+
+## Troubleshooting
+
+### Common Issues
+
+1. **"No runs found"** - Check that you have runs in the specified date range
+2. **Font loading errors** - The app will fall back to system fonts automatically
+3. **Authorization errors** - Delete tokens from `.env` to force re-authorization
+
+### Debug Mode
+
+Add `--verbose` flag (if implemented) for detailed output about what the script is doing.
 
 ## License
 

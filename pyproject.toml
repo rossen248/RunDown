@@ -1,6 +1,7 @@
 [project]
-name = "RunDown"
-version = "0.1.0"
+name = "rundown"
+version = "1.0.0"
+description = "Generate beautiful weekly Strava running stats images"
 dependencies = [
     "stravalib",
     "python-dotenv",
@@ -11,3 +12,6 @@ dependencies = [
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project.scripts]
+rundown = "rundown.main:main"
