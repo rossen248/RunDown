@@ -87,21 +87,6 @@ On your first run, you'll be prompted to authorize the application:
 
 The authorization tokens are saved and will be automatically refreshed as needed.
 
-## Development
-
-### Setup Development Environment
-
-```bash
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# or
-.venv\Scripts\activate  # Windows
-
-# Install in development mode
-pip install -e .
-```
-
 ## Dependencies
 
 - **stravalib** - Python client for Strava API
