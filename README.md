@@ -47,23 +47,23 @@ Generate beautiful weekly summary images of your Strava running activities for a
 
 ```bash
 # Generate stats for last complete week
-python src/main.py
+python rundown.py
 
 # Generate stats for a specific week (by any date in that week)
-python src/main.py --date 2024-03-15
+python rundown.py --date 2024-03-15
 
 # Generate stats for a custom date range
-python src/main.py --start 2024-03-11 --end 2024-03-17
+python rundown.py --start 2024-03-11 --end 2024-03-17
 ```
 
 ### Advanced Options
 
 ```bash
 # Custom output file and label
-python src/main.py --date 2024-03-15 --output my_stats.png --label "Training Week 5"
+python rundown.py --date 2024-03-15 --output my_stats.png --label "Training Week 5"
 
 # Use short flags
-python src/main.py -d 2024-03-15 -o my_stats.png -l "Great Week"
+python rundown.py -d 2024-03-15 -o my_stats.png -l "Great Week"
 ```
 
 ### Command Line Options
@@ -86,24 +86,6 @@ On your first run, you'll be prompted to authorize the application:
 4. Paste it into the terminal when prompted
 
 The authorization tokens are saved and will be automatically refreshed as needed.
-
-## Project Structure
-
-```
-rundown/
-├── src/
-│   ├── main.py              # Main CLI application
-│   ├── strava_client/       # Strava API integration
-│   ├── data_processors/     # Run data processing
-│   ├── image_generator/     # Image generation
-│   └── utils/              # Date utilities
-├── assets/
-│   ├── fonts/              # Font files for image generation
-│   └── logo.png            # Project logo
-├── output/
-│   └── images/             # Generated images
-└── .env                    # Your API credentials (create this)
-```
 
 ## Development
 
@@ -134,10 +116,6 @@ pip install -e .
 1. **"No runs found"** - Check that you have runs in the specified date range
 2. **Font loading errors** - The app will fall back to system fonts automatically
 3. **Authorization errors** - Delete tokens from `.env` to force re-authorization
-
-### Debug Mode
-
-Add `--verbose` flag (if implemented) for detailed output about what the script is doing.
 
 ## License
 
